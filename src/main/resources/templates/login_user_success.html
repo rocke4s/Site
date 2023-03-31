@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Успешная авторизация сотрудника!</title>
+    <style type="text/css">
+        span {
+            display: inline-block;
+            width: 200px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body th:if="${user?.isAuth()}">
+<div align="center">
+    <h2 th:text="${user.typeUser}"></h2>
+    <span>Логин:</span><span th:text="${user.username}"></span><br/>
+    <form action="#" th:action="@{/profile}" method="get" th:object="${user}">
+
+        <button type="submit">Показать данные профиля</button>
+    </form>
+    <form action="" th:action="@{/tasks}" method="get" th:object="${user}">
+
+        <button type="submit">Показать задачи</button>
+    </form>
+</div>
+</body>
+</html>

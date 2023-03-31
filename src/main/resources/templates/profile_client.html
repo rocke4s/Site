@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:if="${user?.isAuth()}">
+<head>
+  <meta charset="UTF-8">
+  <title>Данные профиля!</title>
+  <style type="text/css">
+    span {
+      display: inline-block;
+      width: 200px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+<div align="center">
+  <table>
+    <colgroup>
+      <col span="2" style="background:Khaki">
+      <col style="background-color:LightCyan">
+      <col style="background-color:Blue">
+      <col style="background-color:Green">
+    </colgroup>
+    <tr>
+      <th>ФИО</th>
+      <th>Организация</th>
+      <th>Задолженность</th>
+      <th>Номер телефона</th>
+    </tr>
+    <tr>
+      <td th:text="${Profile.getName()}"></td>
+      <td th:text="${Profile.getOrgName()}"></td>
+      <td th:text="${Profile.getDebt()}"></td>
+      <td th:text="${Profile.getTelefon()}"></td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
