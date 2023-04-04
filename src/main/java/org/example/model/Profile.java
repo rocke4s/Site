@@ -6,7 +6,7 @@ public class Profile {
     private String uidOrg;
     private String orgName;
     private String Telefon;
-    private int debt;
+    private String debt;
 
     public String getUidOrg() {
         return uidOrg;
@@ -32,11 +32,11 @@ public class Profile {
         Telefon = telefon;
     }
 
-    public int getDebt() {
+    public String getDebt() {
         return debt;
     }
 
-    public void setDebt(int debt) {
+    public void setDebt(String debt) {
         this.debt = debt;
     }
 
