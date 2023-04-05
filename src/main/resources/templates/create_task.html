@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Создание заявки</title>
+</head>
+<body>
+
+<form name="form" action="#" th:action="@{/create}" method="get" id="form_message" th:object="${newTask}">
+  <h1>Форма заявки</h1>
+
+  <div class="form-group">
+    <select th:field="*{importance}">
+      <option th:each="listImportance : ${listImportance}"
+              th:value="${listImportance}"
+              th:text="${listImportance}"></option>
+    </select>
+  </div>
+
+
+  <div class="form-group">
+    <label>Содержание</label>
+    <textarea name="soderzhanie" class="form-control" th:field="*{setContent}"></textarea>
+  </div><div class="gElement" style=""><div class="form-group">
+  <input type="file" name="file" />
+  <input class="form-control" value="Отправить" type="submit">
+</div>
+</div>
+
+</form>
+</body>
+</html>

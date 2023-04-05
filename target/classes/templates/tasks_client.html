@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:if="${user?.isAuth()}">
+<head>
+    <meta charset="UTF-8">
+    <title>Задачи!</title>
+    <style type="text/css">
+        span {
+            display: inline-block;
+            width: 200px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+<div align="center">
+    <table>
+        <colgroup>
+            <col span="14" style="background:Khaki">
+        </colgroup>
+        <tr>
+            <th>Ссылка</th>
+            <th>Контрагент</th>
+            <th>Состояние Заявки</th>
+            <th>Тип Задания</th>
+            <th>Важность</th>
+            <th>Содержание</th>
+            <th>СрокДо</th>
+            <th>Трудоемкость</th>
+            <th>ID</th>
+            <th>Дата Выполнено</th>
+            <th>Содержание ЛУВР</th>
+            <th>Номер</th>
+            <th>Дата</th>
+            <th>Сотрудник</th>
+        </tr>
+        <tr th:each="list : ${Tasks.getTasks()}">
+            <td th:text="${list.getTaskUrl()}"></td>
+            <td th:text="${list.getTaskPartner()}"></td>
+            <td th:text="${list.getTaskStatus()}"></td>
+            <td th:text="${list.getTypeTask()}"></td>
+            <td th:text="${list.getTaskImportance()}"></td>
+            <td th:text="${list.getTaskContent()}"></td>
+            <td th:text="${list.getTaskDeadline()}"></td>
+            <td th:text="${list.getTaskIntensity()}"></td>
+            <td th:text="${list.getTaskId()}"></td>
+            <td th:text="${list.getTaskDataDone()}"></td>
+            <td th:text="${list.getTaskContentLVR()}"></td>
+            <td th:text="${list.getTaskNumber()}"></td>
+            <td th:text="${list.getTaskData()}"></td>
+            <td th:text="${list.getTaskEmployee()}"></td>
+
+
+        </tr>
+    </table>
+</div>
+</body>
+</html>

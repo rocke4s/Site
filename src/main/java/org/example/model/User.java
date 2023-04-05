@@ -5,7 +5,7 @@ public class User {
     private String password;
     private String uidUser;
     private String name;
-    private boolean auth = true;
+    private boolean auth = false;
     private String typeUser;
 
     public String getTypeUser() {
