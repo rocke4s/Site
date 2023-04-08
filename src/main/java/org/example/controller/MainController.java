@@ -25,7 +25,7 @@ public class MainController {
     private WebClient webClient = WebClient.create();
     private User shrek = new User();
     private Profile profile = new Profile();
-    private kek kek2 = new kek();
+    private kek kek1 = new kek();
     @GetMapping("")
     public String showLogin(Model model) {
         List<String> list = new ArrayList<>();
@@ -178,23 +178,23 @@ public class MainController {
             listTasks = g.fromJson(str, Task.class);
             model.addAttribute("user", user);
             model.addAttribute("Tasks", listTasks);
-            model.addAttribute("kek2",kek2);
+            model.addAttribute("kek1",kek1);
             return "tasks_client";
         }else {
             return showLogin(model);
         }
     }
     @PostMapping(value = "/changestatus")
-    public String changeStatus(@ModelAttribute("kek2") kek kek2,Tasks tsk,Model model) throws IOException {
+    public String changeStatus(@ModelAttribute("kek1") kek kek1,Tasks tsk,Model model) throws IOException {
        Mono<String> body = webClient.get()
-                .uri("http://192.168.1.224/franrit/hs/RitExchange/GetTestResult/" + kek2.getKkk()+ "/8")
+                .uri("http://192.168.1.224/franrit/hs/RitExchange/GetTestResult/" + kek1.getKkk()+ "/8")
                         .retrieve()
                                 .bodyToMono(String.class);
        String str = body.block();
         System.out.println(str);
         model.addAttribute("user", user);
         model.addAttribute("Tasks", listTasks);
-        model.addAttribute("kek2",kek2);
+        model.addAttribute("kek1",kek1);
        return tasks(tsk,model);
     }
 }
