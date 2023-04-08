@@ -114,7 +114,7 @@ public class MainController {
                         return "login_client_success";//переход на страницу сотрудника после входа
                     }
                     else{
-                        shrek.setAuth(false);
+                        forgetUser();
                         return showLogin(model);
                     }
                 } else if (user.getTypeUser().equalsIgnoreCase("Сотрудник")) {
@@ -137,6 +137,13 @@ public class MainController {
             return showLogin(model);
         }
 
+    }
+
+    public void forgetUser()
+    {
+        shrek.setName("");
+        shrek.setPassword("");
+        shrek.setAuth(false);
     }
     @PostMapping (value = "/profile")
     public String profile(@ModelAttribute("Profile") Profile prof, Model model) throws IOException {
