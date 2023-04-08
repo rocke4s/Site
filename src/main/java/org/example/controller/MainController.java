@@ -117,11 +117,11 @@ public class MainController {
                         forgetUser();
                         return showLogin(model);
                     }
-                } else if (user.getTypeUser().equalsIgnoreCase("Сотрудник")) {
+                } else if (user.getTypeUser().equals("Клиент")) {
                     this.user.setTypeUser(user.getTypeUser());
                     return "login_user_success";//переход на страницу клиента после входа
                 } else {
-                    shrek.setAuth(false);
+                    forgetUser();
                     model.addAttribute("shrek", shrek);
                     return showLogin(model);
                 }
