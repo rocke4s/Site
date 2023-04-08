@@ -6,10 +6,10 @@
 </head>
 <body>
 
-<form name="form" action="#" th:action="@{/create}" method="get" id="form_message" th:object="${newTask}">
+<form name="form" action="#" th:action="@{/create}" method="get" th:object="${newTask}">
   <h1>Форма заявки</h1>
-
-  <div class="form-group">
+  <div><label>Наименования заявки</label><input type="text" th:field="*{nameTask}"></div>
+  <div>
     <select th:field="*{importance}">
       <option th:each="listImportance : ${listImportance}"
               th:value="${listImportance}"
@@ -18,12 +18,11 @@
   </div>
 
 
-  <div class="form-group">
+  <div>
     <label>Содержание</label>
-    <textarea name="soderzhanie" class="form-control" th:field="*{content}"></textarea>
-  </div><div class="gElement" style=""><div class="form-group">
-  <input type="file" name="file" />
-  <input class="form-control" value="Отправить" type="submit">
+    <textarea name="soderzhanie" th:field="*{contentTask}"></textarea>
+  </div>
+  <input value="Отправить" type="submit">
 </div>
 </div>
 

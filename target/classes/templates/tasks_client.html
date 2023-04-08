@@ -15,12 +15,13 @@
 <div align="center">
     <table>
         <colgroup>
-            <col span="14" style="background:Khaki">
+            <col span="15" style="background:Khaki">
         </colgroup>
         <tr>
             <th>Ссылка</th>
             <th>Контрагент</th>
             <th>Состояние Заявки</th>
+            <th>Изменить состояние</th>
             <th>Тип Задания</th>
             <th>Важность</th>
             <th>Содержание</th>
@@ -37,6 +38,13 @@
             <td th:text="${list.getTaskUrl()}"></td>
             <td th:text="${list.getTaskPartner()}"></td>
             <td th:text="${list.getTaskStatus()}"></td>
+            <td><form action="" th:action="@{/changestatus}" method="post" th:object="${kek1}">
+                <select th:field="*{kkk}">
+                    <option th:value="${list.getUidDoc()}"
+                            th:text="${list.getUidDoc()}"/>
+                </select>
+                <button type="submit" th:id="${list.getUidDoc()}" th:field="*{kkk}" >Доработка</button>
+            </form>
             <td th:text="${list.getTypeTask()}"></td>
             <td th:text="${list.getTaskImportance()}"></td>
             <td th:text="${list.getTaskContent()}"></td>
@@ -48,8 +56,6 @@
             <td th:text="${list.getTaskNumber()}"></td>
             <td th:text="${list.getTaskData()}"></td>
             <td th:text="${list.getTaskEmployee()}"></td>
-
-
         </tr>
     </table>
 </div>

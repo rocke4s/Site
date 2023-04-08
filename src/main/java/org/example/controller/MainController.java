@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -19,15 +20,16 @@ import java.util.List;
 @Controller
 public class MainController {
     private NewTask newTask = new NewTask();
-    private Task list = new Task();
+    private Task listTasks = new Task();
     private final User user = new User();
     private WebClient webClient = WebClient.create();
     private User shrek = new User();
     private Profile profile = new Profile();
+    private kek kek1 = new kek();
     @GetMapping("")
-    public String showForm(Model model) {
+    public String showLogin(Model model) {
         List<String> list = new ArrayList<>();
-        list.add("Сотрудник");
+     //   list.add("Сотрудник");
         list.add("Клиент");
         model.addAttribute("list",list);
         shrek.setAuth(true);
@@ -36,8 +38,8 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/create_task")
-    public String createTask(@ModelAttribute("newTask") NewTask newTask, Model model) {
+    @PostMapping("/create_task")
+    public String createTask( Model model) {
 ////        Mono<String> body2 =webClient.get()
 ////                .uri("http://192.168.1.224/franrit/hs/RitExchange/getDocuments/"+profile.getUidOrg()+"/"+profile.getUidUser()+"/0")
 ////                .retrieve()
@@ -45,7 +47,7 @@ public class MainController {
 //        Gson g = new Gson();
 //        String str = body2.block();
         model.addAttribute("user", user);
-        model.addAttribute("task", list);
+        model.addAttribute("task", listTasks);
         List<String> listImportance = new ArrayList<>();
         listImportance.add("Высокая");
         listImportance.add("Средняя");
@@ -57,48 +59,87 @@ public class MainController {
 
     @GetMapping("/create")
     public String postNewTask(@ModelAttribute("newTask") NewTask newTask,Model model) {
+        System.out.println(newTask.getNameTask()+" "+newTask.getContentTask()+" "+newTask.getImportance()+profile.getUidUser());
+        switch (newTask.getImportance())
+        {
+            case "Высокая":
+                newTask.setImportance("2");
+                break;
+            case "Средняя":
+                newTask.setImportance("1");
+                break;
+            case "Низкая":
+                newTask.setImportance("0");
+                break;
+            default:
+                break;
+        }
+        Mono<String> body =
+                webClient.get()
+                        .uri("http://192.168.1.224/franrit/hs/RitExchange/GetCreateTask/"+profile.getUidUser()
+                                +"/"+newTask.getNameTask()+"/"+newTask.getContentTask()+"/"+newTask.getImportance())
+      //                  .body(Mono.just(newTask), NewTask.class)
+                        .retrieve()
+                        .bodyToMono(String.class);
+        Gson g = new Gson();
+        String str = body.block();
+        System.out.println(str);
         model.addAttribute("newTask",newTask);
         model.addAttribute("user", user);
-        model.addAttribute("task", list);
+        model.addAttribute("task", listTasks);
         return "login_client_success";
     }
 
-    @GetMapping(value = "/auth")
-    public String submitForm(@ModelAttribute("user") User user, Model model) throws Exception {
-        if(user.getTypeUser()!=null) {
-            if (user.getTypeUser().equalsIgnoreCase("Сотрудник")) {
-                Mono<String> body =
-                        webClient.get()
-                                .uri("http://192.168.1.224/franrit/hs/RitExchange/GetGUID/tri/123/")
-                                .headers(headers -> headers.setBasicAuth(user.getUsername(), user.getPassword()))
-                                .retrieve()
-                                .bodyToMono(String.class);
-                webClient = WebClient.builder()
-                        .filter(ExchangeFilterFunctions
-                                .basicAuthentication(user.getUsername(), user.getPassword())).build();
-                String str = body.block();
-                Gson g = new Gson();
-                this.profile = g.fromJson(str, Profile.class);
-                System.out.println(user.getUsername() + ", status= " + shrek.isAuth());
-                user.setAuth(true);
-                this.user.setAuth(true);
-                return "login_client_success";//переход на страницу сотрудника после входа
-            } else if (user.getTypeUser().equalsIgnoreCase("Клиент")) {
-                this.user.setTypeUser(user.getTypeUser());
-                return "login_user_success";//переход на страницу клиента после входа
-            } else {
-                return showForm(model);
+    @PostMapping(value = "/auth")
+    public String auth(@ModelAttribute("user") User user, Model model) throws Exception {
+        try{
+            if(user.getTypeUser()!=null) {
+                if (user.getTypeUser().equalsIgnoreCase("Клиент")) {
+                    Mono<String> body =
+                            webClient.get()
+                                    .uri("http://192.168.1.224/franrit/hs/RitExchange/GetGUID/tri/123/")
+                                    .headers(headers -> headers.setBasicAuth(user.getUsername(), user.getPassword()))
+                                    .retrieve()
+                                    .bodyToMono(String.class);
+                    webClient = WebClient.builder()
+                            .filter(ExchangeFilterFunctions
+                                    .basicAuthentication(user.getUsername(), user.getPassword())).build();
+                    String str = body.block();
+                    Gson g = new Gson();
+                    this.profile = g.fromJson(str, Profile.class);
+                    if(this.profile.getUidUser()!=null) {
+                        System.out.println(user.getUsername() + ", status= " + shrek.isAuth());
+                        user.setAuth(true);
+                        this.user.setAuth(true);
+                        return "login_client_success";//переход на страницу сотрудника после входа
+                    }
+                    else{
+                        shrek.setAuth(false);
+                        return showLogin(model);
+                    }
+                } else if (user.getTypeUser().equalsIgnoreCase("Сотрудник")) {
+                    this.user.setTypeUser(user.getTypeUser());
+                    return "login_user_success";//переход на страницу клиента после входа
+                } else {
+                    shrek.setAuth(false);
+                    model.addAttribute("shrek", shrek);
+                    return showLogin(model);
+                }
+            }else {
+                shrek.setAuth(false);
+                model.addAttribute("shrek", shrek);
+                return showLogin(model);
             }
-        }else {
-            return showForm(model);
+        } catch (Exception ex)
+        {
+            shrek.setAuth(false);
+            model.addAttribute("shrek", shrek);
+            return showLogin(model);
         }
+
     }
-//        }
-//        else {
-//            return showForm(model);//Вывод при неправильном пароле
-//        }
-    @GetMapping(value = "/profile")
-    public String submitForm(@ModelAttribute("Profile") Profile prof, Model model) throws IOException {
+    @PostMapping (value = "/profile")
+    public String profile(@ModelAttribute("Profile") Profile prof, Model model) throws IOException {
         System.out.println(user.isAuth());
         model.addAttribute("user", user);
         model.addAttribute("Profile",profile);
@@ -106,12 +147,12 @@ public class MainController {
             return "profile_client";
         }
         else {
-            return showForm(model);
+            return showLogin(model);
 
         }
     }
-    @GetMapping(value = "/tasks")
-    public String submitForm(@ModelAttribute("Tasks") Tasks tsk,Model model) throws IOException {
+    @PostMapping(value = "/tasks")
+    public String tasks(@ModelAttribute("tsk") Tasks tsk,Model model) throws IOException {
         if(user.isAuth()) {
             Mono<String> body2 = webClient.get()
                     .uri("http://192.168.1.224/franrit/hs/RitExchange/getDocuments/" + profile.getUidOrg() + "/" + profile.getUidUser() + "/0")
@@ -134,13 +175,26 @@ public class MainController {
             str = str.replaceAll("Номер", "TaskNumber");
             str = str.replaceAll("Дата", "TaskData");
             str = str.replaceAll("Сотрудник", "TaskEmployee");
-            list = g.fromJson(str, Task.class);
+            listTasks = g.fromJson(str, Task.class);
             model.addAttribute("user", user);
-            model.addAttribute("Tasks", list);
+            model.addAttribute("Tasks", listTasks);
+            model.addAttribute("kek1",kek1);
             return "tasks_client";
         }else {
-            return showForm(model);
+            return showLogin(model);
         }
     }
-
+    @PostMapping(value = "/changestatus")
+    public String changeStatus(@ModelAttribute("kek1") kek kek1,Tasks tsk,Model model) throws IOException {
+       Mono<String> body = webClient.get()
+                .uri("http://192.168.1.224/franrit/hs/RitExchange/GetTestResult/" + kek1.getKkk()+ "/8")
+                        .retrieve()
+                                .bodyToMono(String.class);
+       String str = body.block();
+        System.out.println(str);
+        model.addAttribute("user", user);
+        model.addAttribute("Tasks", listTasks);
+        model.addAttribute("kek1",kek1);
+       return tasks(tsk,model);
+    }
 }

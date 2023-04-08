@@ -2,21 +2,39 @@ package org.example.model;
 
 public class NewTask {
     private String Importance;
-    private String Content;
+    private String contentTask;
+    private String uidUser;
+    private String nameTask;
 
     public String getImportance() {
         return Importance;
     }
 
-    public void setImportance(String importance) {
-        Importance = importance;
+    public void setImportance(String Importance) {
+        this.Importance = Importance;
     }
 
-    public String getContent() {
-        return Content;
+    public String getContentTask() {
+        return contentTask;
     }
 
-    public void setContent(String content) {
-        Content = content;
+    public void setContentTask(String contentTask) {
+        this.contentTask = contentTask;
+    }
+
+    public String getUidUser() {
+        return uidUser;
+    }
+
+    public void setUidUser(String uidUser) {
+        this.uidUser = uidUser;
+    }
+
+    public String getNameTask() {
+        return nameTask;
+    }
+
+    public void setNameTask(String nameTask) {
+        this.nameTask = nameTask;
     }
 }

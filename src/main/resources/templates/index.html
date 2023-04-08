@@ -29,7 +29,7 @@
 <body>
 <div align="center">
     <h1>Авторизация пользователя</h1>
-    <form action="#" th:action="@{/auth}" method="get" th:object="${user}">
+    <form action="#" th:action="@{/auth}" method="post" th:object="${user}">
 
         <label>Логин:</label>
         <input type="text" th:field="*{username}" /><br/>

@@ -15,15 +15,15 @@
 <div align="center">
     <h2 th:text="${user.typeUser}"></h2>
     <span>Логин:</span><span th:text="${user.username}"></span><br/>
-    <form action="#" th:action="@{/profile}" method="get" th:object="${user}">
+    <form action="#" th:action="@{/profile}" method="post" th:object="${user}">
 
         <button type="submit">Показать данные профиля</button>
     </form>
-    <form action="" th:action="@{/tasks}" method="get" th:object="${user}">
+    <form action="" th:action="@{/tasks}" method="post" th:object="${user}">
 
         <button type="submit">Показать задачи</button>
     </form>
-    <form action="" th:action="@{/create_task}" method="get" th:object="${user}">
+    <form action="" th:action="@{/create_task}" method="post" th:object="${user}">
 
         <button type="submit">Создать задачу</button>
     </form>

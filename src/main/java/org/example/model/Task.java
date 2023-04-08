@@ -9,10 +9,21 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("jsonschema2pojo")
 public class Task {
+    @SerializedName("statusTask")
+    @Expose
+    private String statusTask;
 
     @SerializedName("Tasks")
     @Expose
     private List<Tasks> tasks;
+
+    public String getStatusTask() {
+        return statusTask;
+    }
+
+    public void setStatusTask(String statusTask) {
+        this.statusTask = statusTask;
+    }
 
     public List<Tasks> getTasks() {
         return tasks;

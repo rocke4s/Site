@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName;
 
 @Generated("jsonschema2pojo")
 public class Tasks {
-
+    @SerializedName("uidDoc")
+    @Expose
+    public String uidDoc;
     @SerializedName("TaskContent")
     @Expose
     private String taskContent;
@@ -48,6 +50,14 @@ public class Tasks {
     @SerializedName("TypeTask")
     @Expose
     private String typeTask;
+
+    public String getUidDoc() {
+        return uidDoc;
+    }
+
+    public void setUidDoc(String uidDoc) {
+        this.uidDoc = uidDoc;
+    }
 
     public String getTaskContent() {
         return taskContent;
