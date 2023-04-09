@@ -1,5 +1,8 @@
 package org.example.model;
 
+/**
+ * слить с tasks
+ */
 public class NewTask {
     private String Importance;
     private String contentTask;

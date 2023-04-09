@@ -35,7 +35,7 @@
         <input type="text" th:field="*{username}" /><br/>
         <label>Пароль:</label>
         <input type="password" th:field="*{password}" /><br/>
-        <span th:if="not ${shrek?.isAuth()}">Не правильный логин или пароль</span>
+        <span th:if="not ${user?.isAuth()}">Не правильный логин или пароль</span>
 
         <select th:field="*{typeUser}">
             <option th:each="list : ${list}"

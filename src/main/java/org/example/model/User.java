@@ -56,6 +56,20 @@ public class User {
         this.name = name;
     }
 
+    public void exit() {
+        setName("");
+        setUidUser("");
+        setUsername("");
+        setPassword("");
+        setTypeUser("");
+    }
+    public void forgetUser()
+    {
+        setName("");
+        setPassword("");
+        setAuth(false);
+    }
+
     @Override
     public String toString() {
         return "{" +

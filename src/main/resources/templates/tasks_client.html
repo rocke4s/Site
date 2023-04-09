@@ -34,6 +34,7 @@
             <th>Дата</th>
             <th>Сотрудник</th>
         </tr>
+<!--        сделать список 'номер заявки, имя заявки' при нажатие вывод всей инфы по заявке, рядом кнопка с чатом-->
         <tr th:each="list : ${Tasks.getTasks()}">
             <td th:text="${list.getTaskUrl()}"></td>
             <td th:text="${list.getTaskPartner()}"></td>

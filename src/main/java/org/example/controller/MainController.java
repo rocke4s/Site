@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import com.google.gson.Gson;
+import org.apache.juli.logging.Log;
 import org.example.model.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,31 +24,21 @@ public class MainController {
     private Task listTasks = new Task();
     private final User user = new User();
     private WebClient webClient = WebClient.create();
-    private User shrek = new User();
     private Profile profile = new Profile();
-    private kek kek1 = new kek();
+    private kek kek1 = new kek(); //TODO: rename
     @GetMapping("")
     public String showLogin(Model model) {
         List<String> list = new ArrayList<>();
      //   list.add("Сотрудник");
         list.add("Клиент");
         model.addAttribute("list",list);
-        shrek.setAuth(true);
         model.addAttribute("user", user);
-        model.addAttribute("shrek", shrek);
         return "index";
     }
 
     @PostMapping("/create_task")
     public String createTask( Model model) {
-////        Mono<String> body2 =webClient.get()
-////                .uri("http://192.168.1.224/franrit/hs/RitExchange/getDocuments/"+profile.getUidOrg()+"/"+profile.getUidUser()+"/0")
-////                .retrieve()
-////                .bodyToMono(String.class);
-//        Gson g = new Gson();
-//        String str = body2.block();
         model.addAttribute("user", user);
-        model.addAttribute("task", listTasks);
         List<String> listImportance = new ArrayList<>();
         listImportance.add("Высокая");
         listImportance.add("Средняя");
@@ -56,7 +47,12 @@ public class MainController {
         model.addAttribute("listImportance",listImportance);
         return "create_task";
     }
-
+    @PostMapping("/")
+    public String exit( Model model)
+    {
+        user.exit();
+        return showLogin(model);
+    }
     @GetMapping("/create")
     public String postNewTask(@ModelAttribute("newTask") NewTask newTask,Model model) {
         System.out.println(newTask.getNameTask()+" "+newTask.getContentTask()+" "+newTask.getImportance()+profile.getUidUser());
@@ -93,7 +89,7 @@ public class MainController {
     @PostMapping(value = "/auth")
     public String auth(@ModelAttribute("user") User user, Model model) throws Exception {
         try{
-            if(user.getTypeUser()!=null) {
+            if(user.getTypeUser()!=null && user.getTypeUser().equalsIgnoreCase("Клиент") ) {//TODO: check all If example merge if then &&
                 if (user.getTypeUser().equalsIgnoreCase("Клиент")) {
                     Mono<String> body =
                             webClient.get()
@@ -108,46 +104,40 @@ public class MainController {
                     Gson g = new Gson();
                     this.profile = g.fromJson(str, Profile.class);
                     if(this.profile.getUidUser()!=null) {
-                        System.out.println(user.getUsername() + ", status= " + shrek.isAuth());
+                        System.out.println(user.getUsername() + ", status= " + user.isAuth());
                         user.setAuth(true);
                         this.user.setAuth(true);
                         return "login_client_success";//переход на страницу сотрудника после входа
                     }
                     else{
-                        forgetUser();
-                        return showLogin(model);
+                        return falseAuth(model);
                     }
-                } else if (user.getTypeUser().equals("Клиент")) {
+                } else if (user.getTypeUser().equalsIgnoreCase("Сотрдник")) {
                     this.user.setTypeUser(user.getTypeUser());
                     return "login_user_success";//переход на страницу клиента после входа
                 } else {
-                    forgetUser();
-                    model.addAttribute("shrek", shrek);
-                    return showLogin(model);
+                    return falseAuth(model);
                 }
             }else {
-                shrek.setAuth(false);
-                model.addAttribute("shrek", shrek);
-                return showLogin(model);
+                return falseAuth(model);
             }
-        } catch (Exception ex)
-        {
-            shrek.setAuth(false);
-            model.addAttribute("shrek", shrek);
-            return showLogin(model);
+        } catch (Exception ex){
+            //тут должно быть логирование
+           // return falseAuth(model);
         }
-
+        return falseAuth(model);
     }
 
-    public void forgetUser()
-    {
-        shrek.setName("");
-        shrek.setPassword("");
-        shrek.setAuth(false);
+    public String falseAuth(Model model){
+        user.forgetUser();
+        model.addAttribute("user", user);
+        return showLogin(model);
     }
+
+
     @PostMapping (value = "/profile")
     public String profile(@ModelAttribute("Profile") Profile prof, Model model) throws IOException {
-        System.out.println(user.isAuth());
+        //System.out.println(user.isAuth());
         model.addAttribute("user", user);
         model.addAttribute("Profile",profile);
         if(user.isAuth()){
