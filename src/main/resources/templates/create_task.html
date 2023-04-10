@@ -10,7 +10,7 @@
   <h1>Форма заявки</h1>
   <div><label>Наименования заявки</label><input type="text" th:field="*{nameTask}"></div>
   <div>
-    <select th:field="*{importance}">
+    <select th:field="*{taskImportance}">
       <option th:each="listImportance : ${listImportance}"
               th:value="${listImportance}"
               th:text="${listImportance}"></option>
@@ -20,7 +20,7 @@
 
   <div>
     <label>Содержание</label>
-    <textarea name="soderzhanie" th:field="*{contentTask}"></textarea>
+    <textarea name="soderzhanie" th:field="*{taskContent}"></textarea>
   </div>
   <input value="Отправить" type="submit">
 </div>

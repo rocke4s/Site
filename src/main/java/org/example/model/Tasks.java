@@ -11,6 +11,9 @@ public class Tasks {
     @SerializedName("uidDoc")
     @Expose
     private String uidDoc;
+    @SerializedName("NameTask")
+    @Expose
+    private String NameTask;
     @SerializedName("TaskContent")
     @Expose
     private String taskContent;
@@ -55,6 +58,15 @@ public class Tasks {
     private String typeTask;
     public Tasks() {
     }
+
+    public String getNameTask() {
+        return NameTask;
+    }
+
+    public void setNameTask(String nameTask) {
+        NameTask = nameTask;
+    }
+
     public String getUidDoc() {
         return uidDoc;
     }

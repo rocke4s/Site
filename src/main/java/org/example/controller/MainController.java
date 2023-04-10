@@ -1,7 +1,6 @@
 package org.example.controller;
 
 import com.google.gson.Gson;
-import org.apache.juli.logging.Log;
 import org.example.model.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +19,10 @@ import java.util.List;
 
 @Controller
 public class MainController {
-    private NewTask newTask = new NewTask();
     private Task listTasks = new Task();
     private final User user = new User();
     private WebClient webClient = WebClient.create();
     private Profile profile = new Profile();
-    private kek kek1 = new kek(); //TODO: rename
     @GetMapping("")
     public String showLogin(Model model) {
         List<String> list = new ArrayList<>();
@@ -37,7 +34,7 @@ public class MainController {
     }
 
     @PostMapping("/create_task")
-    public String createTask( Model model) {
+    public String createTask(Tasks newTask, Model model) {
         model.addAttribute("user", user);
         List<String> listImportance = new ArrayList<>();
         listImportance.add("Высокая");
@@ -54,18 +51,17 @@ public class MainController {
         return showLogin(model);
     }
     @GetMapping("/create")
-    public String postNewTask(@ModelAttribute("newTask") NewTask newTask,Model model) {
-        System.out.println(newTask.getNameTask()+" "+newTask.getContentTask()+" "+newTask.getImportance()+profile.getUidUser());
-        switch (newTask.getImportance())
+    public String postNewTask(@ModelAttribute("newTask") Tasks newTask,Model model) {
+        switch (newTask.getTaskImportance())
         {
             case "Высокая":
-                newTask.setImportance("2");
+                newTask.setTaskImportance("2");
                 break;
             case "Средняя":
-                newTask.setImportance("1");
+                newTask.setTaskImportance("1");
                 break;
             case "Низкая":
-                newTask.setImportance("0");
+                newTask.setTaskImportance("0");
                 break;
             default:
                 break;
@@ -73,7 +69,7 @@ public class MainController {
         Mono<String> body =
                 webClient.get()
                         .uri("http://192.168.1.224/franrit/hs/RitExchange/GetCreateTask/"+profile.getUidUser()
-                                +"/"+newTask.getNameTask()+"/"+newTask.getContentTask()+"/"+newTask.getImportance())
+                                +"/"+newTask.getNameTask()+"/"+newTask.getTaskContent()+"/"+newTask.getTaskImportance())
       //                  .body(Mono.just(newTask), NewTask.class)
                         .retrieve()
                         .bodyToMono(String.class);
@@ -107,14 +103,14 @@ public class MainController {
                         System.out.println(user.getUsername() + ", status= " + user.isAuth());
                         user.setAuth(true);
                         this.user.setAuth(true);
-                        return "login_client_success";//переход на страницу сотрудника после входа
+                        return "login_client_success";
                     }
                     else{
                         return falseAuth(model);
                     }
                 } else if (user.getTypeUser().equalsIgnoreCase("Сотрдник")) {
                     this.user.setTypeUser(user.getTypeUser());
-                    return "login_user_success";//переход на страницу клиента после входа
+                    return "login_user_success";
                 } else {
                     return falseAuth(model);
                 }
@@ -137,7 +133,6 @@ public class MainController {
 
     @PostMapping (value = "/profile")
     public String profile(@ModelAttribute("Profile") Profile prof, Model model) throws IOException {
-        //System.out.println(user.isAuth());
         model.addAttribute("user", user);
         model.addAttribute("Profile",profile);
         if(user.isAuth()){
@@ -175,23 +170,33 @@ public class MainController {
             listTasks = g.fromJson(str, Task.class);
             model.addAttribute("user", user);
             model.addAttribute("Tasks", listTasks);
-            model.addAttribute("kek1",kek1);
             return "tasks_client";
         }else {
             return showLogin(model);
         }
     }
-    @PostMapping(value = "/changestatus")
-    public String changeStatus(@ModelAttribute("kek1") kek kek1,Tasks tsk,Model model) throws IOException {
-       Mono<String> body = webClient.get()
-                .uri("http://192.168.1.224/franrit/hs/RitExchange/GetTestResult/" + kek1.getKkk()+ "/8")
-                        .retrieve()
-                                .bodyToMono(String.class);
+    @GetMapping(value = "/changestatus")
+    public String changeStatus(String uidDoc_5,String uidDoc_8,Tasks tsk,Model model) throws IOException {
+        Mono<String> body = null;
+        if(uidDoc_5!=null && !uidDoc_5.isEmpty())//передаем выбранное состояние заявки - "на доработку"
+        {
+            body = webClient.get()
+                    .uri("http://192.168.1.224/franrit/hs/RitExchange/GetTestResult/" + uidDoc_5+ "/5")
+                    .retrieve()
+                    .bodyToMono(String.class);
+        }
+        if(uidDoc_8!=null && !uidDoc_8.isEmpty())//передаем выбранное состояние заявки - "выполнено"
+        {
+            body = webClient.get()
+                    .uri("http://192.168.1.224/franrit/hs/RitExchange/GetTestResult/" + uidDoc_8+ "/8")
+                    .retrieve()
+                    .bodyToMono(String.class);
+        }
+
        String str = body.block();
         System.out.println(str);
         model.addAttribute("user", user);
         model.addAttribute("Tasks", listTasks);
-        model.addAttribute("kek1",kek1);
-       return tasks(tsk,model);
+        return tasks(tsk,model);
     }
 }
