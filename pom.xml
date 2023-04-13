@@ -15,6 +15,7 @@
 <description>Form handling with Spring Boot and Thymeleaf</description>
 <properties>
   <project.java.version>1.8</project.java.version>
+  <apache.httpclient>4.5.14</apache.httpclient>
 </properties>
 <!--	<packaging>war</packaging>-->
 <dependencies>
@@ -42,11 +43,13 @@
     <artifactId>spring-boot-starter-webflux</artifactId>
     <version>3.0.4</version>
   </dependency>
+  <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
   <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
-    <version>4.5.7</version>
+    <version>4.5.14</version>
   </dependency>
+
 
   <dependency>
     <groupId>org.springframework.boot</groupId>
