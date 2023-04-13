@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import org.example.model.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +12,11 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunctions;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +24,7 @@ import java.util.List;
 
 @Controller
 public class MainController {
+    private FileUser fileUser = new FileUser();
     private Task listTasks = new Task();
     private final User user = new User();
     private WebClient webClient = WebClient.create();
@@ -28,6 +34,7 @@ public class MainController {
         List<String> list = new ArrayList<>();
      //   list.add("Сотрудник");
         list.add("Клиент");
+        user.setAuth(user.isAuth());
         model.addAttribute("list",list);
         model.addAttribute("user", user);
         return "index";
@@ -42,6 +49,7 @@ public class MainController {
         listImportance.add("Низкая");
         model.addAttribute("newTask",newTask);
         model.addAttribute("listImportance",listImportance);
+        model.addAttribute("fileUser",fileUser);
         return "create_task";
     }
     @PostMapping("/")
@@ -50,8 +58,8 @@ public class MainController {
         user.exit();
         return showLogin(model);
     }
-    @GetMapping("/create")
-    public String postNewTask(@ModelAttribute("newTask") Tasks newTask,Model model) {
+    @PostMapping("/create")
+    public String postNewTask(@ModelAttribute("newTask") Tasks newTask, FileUser fileUser, Model model) throws IOException {
         switch (newTask.getTaskImportance())
         {
             case "Высокая":
@@ -66,10 +74,19 @@ public class MainController {
             default:
                 break;
         }
+        File directory = new File("\\\\192.168.1.9\\billi\\"+newTask.getNameTask());
+        directory.mkdir();
+        String fileName = StringUtils.cleanPath(fileUser.getFile().getOriginalFilename());
+        try {
+            Path path= Paths.get(directory+"\\"+ fileName);
+            Files.copy(fileUser.getFile().getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Mono<String> body =
                 webClient.get()
                         .uri("http://192.168.1.224/franrit/hs/RitExchange/GetCreateTask/"+profile.getUidUser()
-                                +"/"+newTask.getNameTask()+"/"+newTask.getTaskContent()+"/"+newTask.getTaskImportance())
+                                +"/"+newTask.getNameTask()+"/0?File="+newTask.getNameTask()+"\\" + fileName)
       //                  .body(Mono.just(newTask), NewTask.class)
                         .retrieve()
                         .bodyToMono(String.class);
@@ -87,44 +104,45 @@ public class MainController {
         try{
             if(user.getTypeUser()!=null && user.getTypeUser().equalsIgnoreCase("Клиент") ) {//TODO: check all If example merge if then &&
                 if (user.getTypeUser().equalsIgnoreCase("Клиент")) {
-                    Mono<String> body =
-                            webClient.get()
-                                    .uri("http://192.168.1.224/franrit/hs/RitExchange/GetGUID/tri/123/")
-                                    .headers(headers -> headers.setBasicAuth(user.getUsername(), user.getPassword()))
-                                    .retrieve()
-                                    .bodyToMono(String.class);
+                    System.out.println(user.getUsername()+" - "+user.getPassword());
                     webClient = WebClient.builder()
                             .filter(ExchangeFilterFunctions
                                     .basicAuthentication(user.getUsername(), user.getPassword())).build();
+                    Mono<String> body =
+                            webClient.get()
+                                    .uri("http://192.168.1.224/franrit/hs/RitExchange/GetGUID/tri/123/")
+                                    .retrieve()
+                                    .bodyToMono(String.class);
+                    System.out.println(body.block());
                     String str = body.block();
                     Gson g = new Gson();
                     this.profile = g.fromJson(str, Profile.class);
                     if(this.profile.getUidUser()!=null) {
-                        System.out.println(user.getUsername() + ", status= " + user.isAuth());
+                        System.out.println(this.profile.getUidUser());
                         user.setAuth(true);
                         this.user.setAuth(true);
                         return "login_client_success";
                     }
                     else{
-                        return falseAuth(model);
+                        return falseAuth(model,user.isAuth());
                     }
                 } else if (user.getTypeUser().equalsIgnoreCase("Сотрдник")) {
                     this.user.setTypeUser(user.getTypeUser());
                     return "login_user_success";
                 } else {
-                    return falseAuth(model);
+                    return falseAuth(model,user.isAuth());
                 }
             }else {
-                return falseAuth(model);
+                return falseAuth(model,user.isAuth());
             }
         } catch (Exception ex){
             //тут должно быть логирование
            // return falseAuth(model);
         }
-        return falseAuth(model);
+        return falseAuth(model,user.isAuth());
     }
 
-    public String falseAuth(Model model){
+    public String falseAuth(Model model,boolean userAuth){
         user.forgetUser();
         model.addAttribute("user", user);
         return showLogin(model);
@@ -132,7 +150,7 @@ public class MainController {
 
 
     @PostMapping (value = "/profile")
-    public String profile(@ModelAttribute("Profile") Profile prof, Model model) throws IOException {
+    public String profile(@ModelAttribute("Profile") Profile prof, Model model,boolean userAuth) throws IOException {
         model.addAttribute("user", user);
         model.addAttribute("Profile",profile);
         if(user.isAuth()){
@@ -159,6 +177,7 @@ public class MainController {
             str = str.replaceAll("ТипЗадания", "TypeTask");
             str = str.replaceAll("Важность", "TaskImportance");
             str = str.replaceAll("\"Содержание\"", "\"TaskContent\"");
+            str = str.replaceAll("Наименование","NameTask");
             str = str.replaceAll("СрокДо", "TaskDeadline");
             str = str.replaceAll("Трудоемкость", "TaskIntensity");
             str = str.replaceAll("ID", "TaskId");

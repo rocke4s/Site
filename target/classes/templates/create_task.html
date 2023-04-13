@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<form name="form" action="#" th:action="@{/create}" method="get" th:object="${newTask}">
+<form name="form" action="#" th:action="@{/create}" method="post" th:object="${newTask}" enctype="multipart/form-data">
   <h1>Форма заявки</h1>
   <div><label>Наименования заявки</label><input type="text" th:field="*{nameTask}"></div>
   <div>
@@ -22,6 +22,10 @@
     <label>Содержание</label>
     <textarea name="soderzhanie" th:field="*{taskContent}"></textarea>
   </div>
+  <div>
+    <label>Прикрепить файл</label>
+    <input type="file" th:name="${fileUser.name}" th:field="${fileUser.file}">
+    </div>
   <input value="Отправить" type="submit">
 </div>
 </div>

@@ -5,7 +5,7 @@ public class User {
     private String password;
     private String uidUser;
     private String name;
-    private boolean auth = false;
+    private boolean auth = true;
     private String typeUser;
 
     public String getTypeUser() {
@@ -62,6 +62,7 @@ public class User {
         setUsername("");
         setPassword("");
         setTypeUser("");
+        setAuth(true);
     }
     public void forgetUser()
     {

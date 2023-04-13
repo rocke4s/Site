@@ -58,37 +58,52 @@
         th {
             width: 200px;
         }
+        .layer1 {
+            color: white; /* Цвет текста */
+            padding: 10px; /* Поля вокруг текста */
+            margin-bottom: -7px; /* Отступ снизу */
+        }
+        #chat-page ul {
+            list-style-type: none;
+            background-color: #FFF;
+            margin: 0;
+            overflow: auto;
+            overflow-y: scroll;
+            padding: 0 20px 0px 20px;
+            height: calc(100% - 150px);
+        }
     </style>
 </head>
 <body>
 <div align="left">
-    <details th:each="listTask : ${Tasks.getTasks()}"><button>Чат</button>
-        <summary th:text="${listTask.getTaskNumber()}"></summary>
+    <details th:each="listTask : ${Tasks.getTasks()}"><div class="layer1" margin-top="5px"  margin-bottom="5px"><button>Чат</button></div>
+        <summary th:text="${'Номер задачи ['+listTask.getTaskNumber()+'] - Наименование - ['+listTask.getNameTask()+']'}"></summary>
         <table>
             <colgroup>
                 <col span="15" style="background:Khaki">
             </colgroup>
             <tr>
-                <th>Ссылка</th>
-                <th>Контрагент</th>
-                <th>Состояние Заявки</th>
-                <th>Изменить состояние</th>
-                <th>Тип Задания</th>
-                <th>Важность</th>
-                <th>Содержание</th>
-                <th>СрокДо</th>
-                <th>Трудоемкость</th>
-                <th>ID</th>
-                <th>Дата Выполнено</th>
-                <th>Содержание ЛУВР</th>
-                <th>Дата</th>
-                <th>Сотрудник</th>
+                <th th:if="${!listTask.getTaskUrl().isEmpty()}">Ссылка</th>
+                <th th:if="${!listTask.getTaskPartner().isEmpty()}">Контрагент</th>
+                <th th:if="${!listTask.getTaskStatus().isEmpty()}">Состояние Заявки</th>
+                <th th:if="${listTask.getTaskStatus()!='Проверено' && listTask.getTaskStatus()!='Выполнена' && listTask.getTaskStatus()!='Отменено'}">Изменить состояние</th>
+                <th th:if="${!listTask.getTypeTask().isEmpty()}">Тип Задания</th>
+                <th th:if="${!listTask.getTaskImportance().isEmpty()}">Важность</th>
+                <th th:if="${!listTask.getTaskContent().isEmpty()}">Содержание</th>
+                <th th:if="${!listTask.getTaskDeadline().isEmpty()}">СрокДо</th>
+                <th th:if="${!listTask.getTaskIntensity().isEmpty()}">Трудоемкость</th>
+                <th th:if="${!listTask.getTaskId().isEmpty()}">ID</th>
+                <th th:if="${!listTask.getTaskDataDone().isEmpty()}">Дата Выполнено</th>
+                <th th:if="${!listTask.getTaskContentLVR().isEmpty()}">Содержание ЛУВР</th>
+                <th th:if="${!listTask.getTaskData().isEmpty()}">Дата</th>
+                <th th:if="${!listTask.getTaskEmployee().isEmpty()}">Сотрудник</th>
             </tr>
             <tr th:each="list : ${Tasks.getTasks()}" th:if="${list.getTaskNumber()==listTask.getTaskNumber()}">
-                <td th:text="${list.getTaskUrl()}"></td>
-                <td th:text="${list.getTaskPartner()}"></td>
-                <td th:text="${list.getTaskStatus()}"></td>
-                <td><form action="" th:action="@{/changestatus}" method="get" th:if="${list.getTaskStatus()!='Проверено' && list.getTaskStatus()!='На доработке' && list.getTaskStatus()!='Выполнена' && list.getTaskStatus()!='Отменено'}">
+                <td th:text="${list.getTaskUrl()}"  th:if="${!listTask.getTaskUrl().isEmpty()}"></td>
+                <td th:text="${list.getTaskPartner()}"  th:if="${!listTask.getTaskPartner().isEmpty()}"></td>
+                <td th:text="${list.getTaskStatus()}"  th:if="${!listTask.getTaskStatus().isEmpty()}"></td>
+                <td th:if="${list.getTaskStatus()!='Проверено' && list.getTaskStatus()!='Выполнена' && list.getTaskStatus()!='Отменено'}">
+                    <form action="" th:action="@{/changestatus}" method="get" th:if="${list.getTaskStatus()!='Проверено' && list.getTaskStatus()!='На доработке' && list.getTaskStatus()!='Выполнена' && list.getTaskStatus()!='Отменено'}">
                     <input type="hidden" th:value="${list.getUidDoc()}" th:name="uidDoc_5">
                     <button type="submit" >Доработка</button>
                 </form>
@@ -96,18 +111,31 @@
                         <input type="hidden" th:value="${list.getUidDoc()}" th:name="uidDoc_8">
                         <button type="submit" >Проверено</button>
                     </form></td>
-                <td th:text="${list.getTypeTask()}"></td>
-                <td th:text="${list.getTaskImportance()}"></td>
-                <td th:text="${list.getTaskContent()}"></td>
-                <td th:text="${list.getTaskDeadline()}"></td>
-                <td th:text="${list.getTaskIntensity()}"></td>
-                <td th:text="${list.getTaskId()}"></td>
-                <td th:text="${list.getTaskDataDone()}"></td>
-                <td th:text="${list.getTaskContentLVR()}"></td>
-                <td th:text="${list.getTaskData()}"></td>
-                <td th:text="${list.getTaskEmployee()}"></td>
+                <td th:text="${list.getTypeTask()}" th:if="${!listTask.getTypeTask().isEmpty()}">></td>
+                <td th:text="${list.getTaskImportance()}" th:if="${!listTask.getTaskImportance().isEmpty()}"></td>
+                <td th:text="${list.getTaskContent()}" th:if="${!listTask.getTaskContent().isEmpty()}"></td>
+                <td th:text="${list.getTaskDeadline()}" th:if="${!listTask.getTaskDeadline().isEmpty()}"></td>
+                <td th:text="${list.getTaskIntensity()}" th:if="${!listTask.getTaskIntensity().isEmpty()}"></td>
+                <td th:text="${list.getTaskId()}" th:if="${!listTask.getTaskId().isEmpty()}"></td>
+                <td th:text="${list.getTaskDataDone()}" th:if="${!listTask.getTaskDataDone().isEmpty()}"></td>
+                <td th:text="${list.getTaskContentLVR()}" th:if="${!listTask.getTaskContentLVR().isEmpty()}"></td>
+                <td th:text="${list.getTaskData()}" th:if="${!listTask.getTaskData().isEmpty()}"></td>
+                <td th:text="${list.getTaskEmployee()}" th:if="${!listTask.getTaskEmployee().isEmpty()}"></td>
             </tr>
         </table>
+        <div id="chat-page">
+            <ul id="messageArea">
+
+            </ul>
+            <form id="messageForm" name="messageForm" nameForm="messageForm">
+                <div class="form-group">
+                    <div class="input-group clearfix">
+                        <input type="text" id="message" placeholder="Введите сообщение..." autocomplete="off" class="form-control"/>
+                        <button type="submit" class="primary">Отправить</button>
+                    </div>
+                </div>
+            </form>
+        </div>
         </details>
 </div>
 </div>
